@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="https://pyscript.net/latest/pyscript.css"
+    />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div action="#" method="get" id="inputs">
+        <label for="waveform">Waveform:
+          <select id="waveform" name="waveform">
+            <option value="sine">sine</option>
+            <option value="cosine">cosine</option>
+            <option value="square">square</option>
+            <option value="sawtooth">sawtooth</option>
+          </select>
+        </label>
+        <label for="frequency">Frequency:
+          <input type="number" name="frequency" id="frequency" placeholder="Frequency">
+        </label>
+        <label for="amplitude">Amplitude:
+          <input type="number" name="amplitude" id="amplitude" placeholder="Amplitude">
+        </label>
+        <label for="phase">Phase:
+          <input type="number" name="phase" id="phase" placeholder="Phase">
+        </label>
+        <label for="offset">Offset:
+          <input type="number" name="offset" id="offset" placeholder="Offset">
+        </label>
+        <label for="samplerate">Sample Rate:
+          <input type="number" name="samplerate" id="samplerate" placeholder="Sample Rate">
+        </label>
+        <label for="samples">Samples:
+          <input type="number" name="samples" id="samples" placeholder="Samples">
+        </label>
+        <button id="submit" py-click="run()">Submit</button>
+        <button id="fft" py-click="runFFT()">FFT</button>
+
+        <textarea name="rawData" id="rawData" cols="60" rows="10"></textarea>
+        <label for="samplerate2">Sample Rate:
+          <input type="number" name="samplerate2" id="samplerate2" placeholder="Sample Rate">
+        </label>
+        <label for="samples2">Samples:
+          <input type="number" name="samples2" id="samples2" placeholder="Samples">
+        <button id="loadRawData" py-click="load_raw_data()">Load</button>
+        <button id="fft" py-click="runFFT2()">FFT</button>
+      </div>
+      <script src="main.js"></script>
+      <div id="output">
+        <div id="text"></div>
+        <div id="graphs">
+        </div>
+      </div>
+    </div>
+    <script>
+      function get_params() {
+        defaultParams = [
+          'waveform',
+          'frequency',
+          'amplitude',
+          'phase',
+          'offset',
+          'samplerate',
+          'samples'
+        ]
+
+        rawParams = new URL(window.location.href).searchParams
+        if (rawParams.get('waveform') == null) {
+          return null;
+        } else {
+          params = {}
+          for (const param of defaultParams) {
+            params[param] = param == 'waveform' ? rawParams.get(param) : Number(rawParams.get(param))
+            if (params[param] != null)
+              document.querySelector(`#${param}`).value = params[param]
+          }
+        }
+        
+        return params;
+      }
+    </script>
+    <py-config>
+      packages = ["numpy", "pandas", "scipy", "matplotlib"]
+    </py-config>
+    <py-script src="./python/fourier.py"></py-script>
+    <py-script src="./python/plot.py"></py-script>
+    <py-script>
+      from js import document, get_params, Number
+
+      #params = get_params()
+
+      #if params is not None:
+      #  params = params.to_py()
+      #  signal = Signal(
+      #    params['waveform'],
+      #    frequency=params['frequency'],
+      #    amplitude=params['amplitude'],
+      #    offset=params['offset'],
+      #    phase=params['phase']).sample(
+      #    samplerate=params['samplerate'],
+      #    samples=params['samples']
+      #  )
+
+      #  document.querySelector('#output #text').innerHTML = signal.to_html(index=False)
+      #  display(signal.plot(), target='graph')
+
+      def run():
+        global data
+        data = Signal(
+          document.querySelector('#waveform').value,
+          frequency=Number(document.querySelector('#frequency').value),
+          amplitude=Number(document.querySelector('#amplitude').value),
+          offset=Number(document.querySelector('#offset').value),
+          phase=Number(document.querySelector('#phase').value)).sample(
+          samplerate=Number(document.querySelector('#samplerate').value),
+          samples=Number(document.querySelector('#samples').value)
+        )
+
+        document.querySelector('#output #text').innerHTML = data.to_html(index=False, decimal=',')
+        document.querySelector('#output #graphs').innerHTML = ''
+        display(data.plot(), target='graphs')
+
+        return data
+
+      def runFFT(data = None):
+        if data is not None:
+          ftt = data.fft()
+          display(ftt.plot(), target='graphs')
+          document.querySelector('#output #text').innerHTML += ftt.to_html(index=False, decimal=',')
+        else:
+          runFFT(run())
+
+      def load_raw_data():
+        global data
+        data = Data(document.querySelector('#rawData').value, samplerate=Number(document.querySelector('#samplerate2').value), samples=Number(document.querySelector('#samples2').value))
+        document.querySelector('#output #text').innerHTML = data.to_html(index=False, decimal=',')
+        document.querySelector('#output #graphs').innerHTML = ''
+        display(data.plot(), target='graphs')
+
+        return data
+
+      def runFFT2(data = None):
+        if data is not None:
+          ftt = data.fft()
+          display(ftt.plot(), target='graphs')
+          document.querySelector('#output #text').innerHTML += ftt.to_html(index=False, decimal=',')
+        else:
+          runFFT2(load_raw_data())
+    </py-script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+#wrapper #output {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+#wrapper #output #text {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+}
+
+#wrapper #output #graphs {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+#wrapper #inputs {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+#wrapper #inputs > * {
+  margin: 0 0.5em;
+}
