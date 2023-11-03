@@ -6,7 +6,7 @@
   align-items: flex-start;
 }
 
-#wrapper #output {
+#wrapper > #output {
   display: flex;
   flex-direction: row;
   align-content: flex-start;
@@ -14,7 +14,7 @@
   align-items: flex-start;
 }
 
-#wrapper #output #text {
+#wrapper > #output > #text {
   display: flex;
   flex-direction: row;
   align-content: flex-start;
@@ -23,7 +23,7 @@
 
 }
 
-#wrapper #output #graphs {
+#wrapper > #output > #graphs {
   display: flex;
   flex-direction: row;
   align-content: flex-start;
@@ -32,7 +32,18 @@
   flex-wrap: wrap;
 }
 
-#wrapper #inputs {
+#wrapper > #inputs {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: flex-start;
+  column-gap: 2em;
+
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ccc;
+}
+
+#wrapper > #inputs > div {
   display: flex;
   flex-direction: row;
   align-content: flex-start;
@@ -40,6 +51,11 @@
   flex-wrap: wrap;
 }
 
-#wrapper #inputs > * {
-  margin: 0 0.5em;
+#wrapper > #inputs > div > * {
+  margin: 0.5em 0.2em;
+  white-space: nowrap;
+}
+
+#wrapper > #inputs input[type="number"] {
+  width: 2em;
 }

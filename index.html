@@ -14,43 +14,46 @@
   <body>
     <div id="wrapper">
       <div action="#" method="get" id="inputs">
-        <label for="waveform">Waveform:
-          <select id="waveform" name="waveform">
-            <option value="sine">sine</option>
-            <option value="cosine">cosine</option>
-            <option value="square">square</option>
-            <option value="sawtooth">sawtooth</option>
-          </select>
-        </label>
-        <label for="frequency">Frequency:
-          <input type="number" name="frequency" id="frequency" placeholder="Frequency">
-        </label>
-        <label for="amplitude">Amplitude:
-          <input type="number" name="amplitude" id="amplitude" placeholder="Amplitude">
-        </label>
-        <label for="phase">Phase:
-          <input type="number" name="phase" id="phase" placeholder="Phase">
-        </label>
-        <label for="offset">Offset:
-          <input type="number" name="offset" id="offset" placeholder="Offset">
-        </label>
-        <label for="samplerate">Sample Rate:
-          <input type="number" name="samplerate" id="samplerate" placeholder="Sample Rate">
-        </label>
-        <label for="samples">Samples:
-          <input type="number" name="samples" id="samples" placeholder="Samples">
-        </label>
-        <button id="submit" py-click="run()">Submit</button>
-        <button id="fft" py-click="runFFT()">FFT</button>
-
-        <textarea name="rawData" id="rawData" cols="60" rows="10"></textarea>
-        <label for="samplerate2">Sample Rate:
-          <input type="number" name="samplerate2" id="samplerate2" placeholder="Sample Rate">
-        </label>
-        <label for="samples2">Samples:
-          <input type="number" name="samples2" id="samples2" placeholder="Samples">
-        <button id="loadRawData" py-click="load_raw_data()">Load</button>
-        <button id="fft" py-click="runFFT2()">FFT</button>
+        <div id="generate">
+          <label for="waveform">Waveform:
+            <select id="waveform" name="waveform">
+              <option value="sine">sine</option>
+              <option value="cosine">cosine</option>
+              <option value="square">square</option>
+              <option value="sawtooth">sawtooth</option>
+            </select>
+          </label>
+          <label for="frequency">Frequency:
+            <input type="number" name="frequency" id="frequency" placeholder="Frequency">
+          </label>
+          <label for="amplitude">Amplitude:
+            <input type="number" name="amplitude" id="amplitude" placeholder="Amplitude">
+          </label>
+          <label for="phase">Phase:
+            <input type="number" name="phase" id="phase" placeholder="Phase">
+          </label>
+          <label for="offset">Offset:
+            <input type="number" name="offset" id="offset" placeholder="Offset">
+          </label>
+          <label for="samplerate">Sample Rate:
+            <input type="number" name="samplerate" id="samplerate" placeholder="Sample Rate">
+          </label>
+          <label for="samples">Samples:
+            <input type="number" name="samples" id="samples" placeholder="Samples">
+          </label>
+          <button id="submit" py-click="run()">Submit</button>
+          <button id="fft" py-click="runFFT()">FFT</button>
+        </div>
+        <div id="load">
+          <textarea name="rawData" id="rawData" cols="60" rows="10"></textarea>
+          <label for="samplerate2">Sample Rate:
+            <input type="number" name="samplerate2" id="samplerate2" placeholder="Sample Rate">
+          </label>
+          <label for="samples2">Samples:
+            <input type="number" name="samples2" id="samples2" placeholder="Samples">
+          <button id="loadRawData" py-click="load_raw_data()">Load</button>
+          <button id="fft" py-click="runFFT2()">FFT</button>
+        </div>
       </div>
       <script src="main.js"></script>
       <div id="output">
