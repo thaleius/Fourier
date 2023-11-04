@@ -51,11 +51,27 @@
   flex-wrap: wrap;
 }
 
-#wrapper > #inputs > div > * {
-  margin: 0.5em 0.2em;
+#wrapper > #inputs > div > div {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  row-gap: 1em;
+
+  padding: 1em 0.5em;
+}
+
+/* border top for last child */
+#wrapper > #inputs > div > div:last-child {
+  border-top: 1px solid #ccc;
+}
+
+#wrapper > #inputs > div > div > div > *, #wrapper > #inputs > div > div.controls > * {
+  margin: 0 0.2em;
   white-space: nowrap;
 }
 
 #wrapper > #inputs input[type="number"] {
-  width: 2em;
+  width: 5em;
 }

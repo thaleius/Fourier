@@ -15,44 +15,55 @@
     <div id="wrapper">
       <div action="#" method="get" id="inputs">
         <div id="generate">
-          <label for="waveform">Waveform:
-            <select id="waveform" name="waveform">
-              <option value="sine">sine</option>
-              <option value="cosine">cosine</option>
-              <option value="square">square</option>
-              <option value="sawtooth">sawtooth</option>
-            </select>
-          </label>
-          <label for="frequency">Frequency:
-            <input type="number" name="frequency" id="frequency" placeholder="Frequency">
-          </label>
-          <label for="amplitude">Amplitude:
-            <input type="number" name="amplitude" id="amplitude" placeholder="Amplitude">
-          </label>
-          <label for="phase">Phase:
-            <input type="number" name="phase" id="phase" placeholder="Phase">
-          </label>
-          <label for="offset">Offset:
-            <input type="number" name="offset" id="offset" placeholder="Offset">
-          </label>
-          <label for="samplerate">Sample Rate:
-            <input type="number" name="samplerate" id="samplerate" placeholder="Sample Rate">
-          </label>
-          <label for="samples">Samples:
-            <input type="number" name="samples" id="samples" placeholder="Samples">
-          </label>
-          <button id="submit" py-click="run()">Submit</button>
-          <button id="fft" py-click="runFFT()">FFT</button>
+          <div id="groups">
+            <div class="group">
+              <label>Waveform:
+                <select class="waveform" name="waveform">
+                  <option value="sine">sine</option>
+                  <option value="cosine">cosine</option>
+                  <option value="square">square</option>
+                  <option value="sawtooth">sawtooth</option>
+                </select>
+              </label>
+              <label>Frequency:
+                <input type="number" min="0" name="frequency" class="frequency" placeholder="Frequency" value="5" required>
+              </label>
+              <label>Amplitude:
+                <input type="number" name="amplitude" class="amplitude" placeholder="Amplitude" value="1" required>
+              </label>
+              <label>Phase:
+                <input type="number" name="phase" class="phase" placeholder="Phase" value="0" required>
+              </label>
+              <label>Offset:
+                <input type="number" name="offset" class="offset" placeholder="Offset" value="0" required>
+              </label>
+            </div>
+          </div>
+          <div class="controls">
+            <label>Sample Rate:
+              <input type="number" min="1" name="samplerate" id="samplerate" class="samplerate" placeholder="Sample Rate" value="1000" required>
+            </label>
+            <label>Samples:
+              <input type="number" min="1" name="samples" id="samples" class="samples" placeholder="Samples" value="1000" required>
+            </label>
+            <button id="add">Add</button>
+            <button id="submit" py-click="run()">Submit</button>
+            <button id="fft" py-click="runFFT()">FFT</button>
+          </div>
         </div>
         <div id="load">
-          <textarea name="rawData" id="rawData" cols="60" rows="10"></textarea>
-          <label for="samplerate2">Sample Rate:
-            <input type="number" name="samplerate2" id="samplerate2" placeholder="Sample Rate">
-          </label>
-          <label for="samples2">Samples:
-            <input type="number" name="samples2" id="samples2" placeholder="Samples">
-          <button id="loadRawData" py-click="load_raw_data()">Load</button>
-          <button id="fft" py-click="runFFT2()">FFT</button>
+          <div>
+            <textarea name="rawData" id="rawData" cols="60" rows="10" required></textarea>
+          </div>
+          <div class="controls">
+            <label for="samplerate2">Sample Rate:
+              <input type="number" min="1" name="samplerate2" id="samplerate2" placeholder="Sample Rate" value="1000" required>
+            </label>
+            <label for="samples2">Samples:
+              <input type="number" min="1" name="samples2" id="samples2" placeholder="Samples" value="1000" required>
+            <button id="loadRawData" py-click="load_raw_data()">Load</button>
+            <button id="fft" py-click="runFFT2()">FFT</button>
+          </div>
         </div>
       </div>
       <script src="main.js"></script>
@@ -96,32 +107,28 @@
     <py-script src="./python/plot.py"></py-script>
     <py-script>
       from js import document, get_params, Number
-
-      #params = get_params()
-
-      #if params is not None:
-      #  params = params.to_py()
-      #  signal = Signal(
-      #    params['waveform'],
-      #    frequency=params['frequency'],
-      #    amplitude=params['amplitude'],
-      #    offset=params['offset'],
-      #    phase=params['phase']).sample(
-      #    samplerate=params['samplerate'],
-      #    samples=params['samples']
-      #  )
-
-      #  document.querySelector('#output #text').innerHTML = signal.to_html(index=False)
-      #  display(signal.plot(), target='graph')
+      from pyodide.code import run_js
 
       def run():
         global data
-        data = Signal(
-          document.querySelector('#waveform').value,
-          frequency=Number(document.querySelector('#frequency').value),
-          amplitude=Number(document.querySelector('#amplitude').value),
-          offset=Number(document.querySelector('#offset').value),
-          phase=Number(document.querySelector('#phase').value)).sample(
+        groups = run_js('Array.from(document.querySelectorAll("#groups .group"))')
+
+        signal = Signal(
+          groups[0].querySelector('.waveform').value,
+          frequency=Number(groups[0].querySelector('.frequency').value),
+          amplitude=Number(groups[0].querySelector('.amplitude').value),
+          offset=Number(groups[0].querySelector('.offset').value),
+          phase=Number(groups[0].querySelector('.phase').value))
+
+        for group in groups[1:]:
+          signal += Signal(
+            group.querySelector('.waveform').value,
+            frequency=Number(group.querySelector('.frequency').value),
+            amplitude=Number(group.querySelector('.amplitude').value),
+            offset=Number(group.querySelector('.offset').value),
+            phase=Number(group.querySelector('.phase').value))
+
+        data = signal.sample(
           samplerate=Number(document.querySelector('#samplerate').value),
           samples=Number(document.querySelector('#samples').value)
         )
