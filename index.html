@@ -40,6 +40,9 @@
               </label>
             </div>
           </div>
+          <div>
+            <button id="add">Add</button>
+          </div>
           <div class="controls">
             <label>Sample Rate:
               <input type="number" min="1" name="samplerate" id="samplerate" class="samplerate" placeholder="Sample Rate" value="1000" required>
@@ -47,7 +50,6 @@
             <label>Samples:
               <input type="number" min="1" name="samples" id="samples" class="samples" placeholder="Samples" value="1000" required>
             </label>
-            <button id="add">Add</button>
             <button id="submit" py-click="run()">Submit</button>
             <button id="fft" py-click="runFFT()">FFT</button>
           </div>
