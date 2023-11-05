@@ -33,10 +33,13 @@
 }
 
 #wrapper > #inputs {
+  width: 100%;
+
   display: flex;
   flex-direction: row;
   align-content: flex-start;
   align-items: flex-start;
+  justify-content: space-evenly;
   column-gap: 2em;
 
   padding-bottom: 1em;
@@ -45,10 +48,9 @@
 
 #wrapper > #inputs > div {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-content: flex-start;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  align-items: flex-start
 }
 
 #wrapper > #inputs > div > div {
