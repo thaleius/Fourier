@@ -175,7 +175,7 @@ class Signal:
     if 'samples' in kwargs:
       samples = kwargs['samples']
 
-    data = [(round(t, 6), round(self(t + (1/samplerate if self.waveform == 'square' else 0)), 6)) for t in np.linspace(0, ((samples-1)/samplerate), samples)]
+    data = [(t, self(t + (1/samplerate if self.waveform == 'square' else 0))) for t in np.linspace(0, ((samples-1)/samplerate), samples)]
     return Data(pd.DataFrame(data, columns=['t', 'Signal']), samplerate=samplerate, samples=samples)
 
 class DataB:
@@ -272,6 +272,5 @@ class Data(DataB):
     sampling_rate = self.params['samplerate']
 
     df = pd.DataFrame({'f': rfftfreq(N, d=1/sampling_rate), 'A': 2*np.abs(rfft(self.data[self.data.columns[1]].values))/N})#[1:]
-    df['A'] = round(df['A'], 6)
 
     return DataF(df)
