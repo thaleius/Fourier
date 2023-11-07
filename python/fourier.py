@@ -175,6 +175,8 @@ class Signal:
     if 'samples' in kwargs:
       samples = kwargs['samples']
 
+    self.samplerate = samplerate
+    self.samples = samples
     data = [(t, self(t + (1/samplerate if self.waveform == 'square' else 0))) for t in np.linspace(0, ((samples-1)/samplerate), samples)]
     return Data(pd.DataFrame(data, columns=['t', 'Signal']), samplerate=samplerate, samples=samples)
 
@@ -237,28 +239,92 @@ class DataB:
     return table
   
 class DataF(DataB):
-  def plot(self):
+  def __init__(self, data, **kwargs):
+    self.data = data
+
+    if 'samplerate' in kwargs:
+      self.samplerate = kwargs['samplerate']
+    if 'samples' in kwargs:
+      self.samples = kwargs['samples']
+
+    self.params = kwargs
+
+  def plot(self, **kwargs):
     if self.data is None:
       raise Exception('No data to plot')
 
     fig, ax = plot()
-    ax.vlines(self.data['f'], 0, self.data['A'], label='FFT', colors='red')
-    ax.legend()
+    if 'real' not in kwargs or kwargs['real'] != 0:
+      ax.vlines(self.data['f'], 0, self.data['A'].apply(lambda x: np.real(x)), label='Kosinus', colors='green')
+    if 'imag' not in kwargs or kwargs['imag'] != 0:
+      ax.vlines(self.data['f'], 0, self.data['A'].apply(lambda x: np.imag(x)), label='Sinus', colors='red')
+
+    if kwargs['legend'] if 'legend' in kwargs else True:
+      # put legend at best position
+      ax.legend(loc='best')
+
     ax.set_xlabel(r'Frequenz / Hz')
     ax.set_ylabel(r'Amplitude')
+
+    ax.set_xlim(*kwargs['xlim'] if 'xlim' in kwargs else (None, None))
+    ax.set_ylim(*kwargs['ylim'] if 'ylim' in kwargs else (None, None))
+
     return fig
+  
+  # inverse fourier transform
+  def ifft(self, **kwargs):    
+    if 'samplerate' in kwargs:
+      sampling_rate = kwargs['samplerate']
+    else:
+      sampling_rate = 1000
+    if 'samples' in kwargs:
+      samples = kwargs['samples']
+    else:
+      samples = 1000
+
+    real = True
+    imag = True
+
+    if 'real' in kwargs:
+      if kwargs['real'] == 0:
+        real = False        
+    if 'imag' in kwargs:
+      if kwargs['imag'] == 0:
+        imag = False
+
+    if real:
+      signal = Signal('cosine', frequency=self.data.iloc[0]['f'], amplitude=np.real(self.data.iloc[0]['A']))
+    if imag:
+      signal = Signal('sine', frequency=self.data.iloc[0]['f'], amplitude=-np.imag(self.data.iloc[0]['A']))
+    for i in range(1, len(self.data)):
+      if real:
+        signal += Signal('cosine', frequency=self.data.iloc[i]['f'], amplitude=np.real(self.data.iloc[i]['A']))
+      if imag:
+        signal += Signal('sine', frequency=self.data.iloc[i]['f'], amplitude=-np.imag(self.data.iloc[i]['A']))
+
+    return signal.sample(sampling_rate, samples)
 
 class Data(DataB):
-  def plot(self):
+  def plot(self, draw_dots = True, *args, **kwargs):
     if self.data is None:
       raise Exception('No data to plot')
+
+    self.data[self.data.columns[1]] = self.data[self.data.columns[1]].apply(lambda x: np.real(x))
 
     fig, ax = plot()
     ax.plot(self.data[self.data.columns[0]], self.data[self.data.columns[1]], label='Signal')
-    ax.plot(self.data[self.data.columns[0]], self.data[self.data.columns[1]], '.', label='Abtastwerte')
-    ax.legend()
+  
+    if draw_dots:
+      ax.plot(self.data[self.data.columns[0]], self.data[self.data.columns[1]], '.', label='Abtastwerte')
+    
+    if kwargs['legend'] if 'legend' in kwargs else True:
+      ax.legend()
     ax.set_xlabel(r'Zeit / s')
     ax.set_ylabel(r'Amplitude')
+    
+    ax.set_xlim(*kwargs['xlim'] if 'xlim' in kwargs else (None, None))
+    ax.set_ylim(*kwargs['ylim'] if 'ylim' in kwargs else (None, None))
+
     return fig
 
   def fft(self):
@@ -271,6 +337,6 @@ class Data(DataB):
 
     sampling_rate = self.params['samplerate']
 
-    df = pd.DataFrame({'f': rfftfreq(N, d=1/sampling_rate), 'A': 2*np.abs(rfft(self.data[self.data.columns[1]].values))/N})#[1:]
+    df = pd.DataFrame({'f': rfftfreq(N, d=1/sampling_rate), 'A': 2*(rfft(self.data[self.data.columns[1]].values))/N})#[1:]
 
-    return DataF(df)
+    return DataF(df, samplerate=sampling_rate, samples=N)

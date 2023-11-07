@@ -149,6 +149,8 @@
         if data is not None:
           ftt = data.fft()
           display(ftt.plot(), target='graphs')
+          iftt = ftt.ifft()
+          display(iftt.plot(False), target='graphs')
           document.querySelector('#output #text').innerHTML += ftt.to_html(index=False, decimal=',')
         else:
           runFFT(run())
@@ -166,6 +168,8 @@
         if data is not None:
           ftt = data.fft()
           display(ftt.plot(), target='graphs')
+          iftt = ftt.ifft()
+          display(iftt.plot(False), target='graphs')
           document.querySelector('#output #text').innerHTML += ftt.to_html(index=False, decimal=',')
         else:
           runFFT2(load_raw_data())
