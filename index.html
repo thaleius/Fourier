@@ -112,6 +112,8 @@
     <py-script>
       from js import document, get_params, Number
       from pyodide.code import run_js
+      import sys
+      sys.setrecursionlimit(2050)
 
       def run():
         global data
